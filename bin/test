@@ -1,7 +1,7 @@
 <?php
 
 use EFrane\PharTest\Application\PharApplication;
-use EFrane\PharTest\Application\Kernel;
+use EFrane\PharTest\Application\PharKernel;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -29,7 +29,7 @@ putenv('APP_DEBUG=0');
 
 (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
 
-$kernel = new Kernel('prod', false);
+$kernel = new PharKernel('prod', false);
 $application = new PharApplication($kernel);
 
 try {
