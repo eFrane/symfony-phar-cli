@@ -1,0 +1,27 @@
+{
+  "main": "bin/test",
+  "output": "build/test.phar",
+  "compression": "GZ",
+  "finder": [{
+    "exclude": [
+      ".box",
+      ".github",
+      ".idea",
+      "vendor-bin",
+      "var"
+    ],
+    "ignoreDotFiles": false,
+    "in": ".",
+    "notName": [
+      "*.md",
+      ".gitignore",
+      "box.json",
+      "build.sh",
+      "scoper.inc.php"
+    ]
+  }],
+  "compactors":[
+    "KevinGH\\Box\\Compactor\\Php",
+    "KevinGH\\Box\\Compactor\\PhpScoper"
+  ]
+}
