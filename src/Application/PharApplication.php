@@ -50,7 +50,7 @@ class PharApplication extends Application
 
         $container = $this->getKernel()->getContainer();
 
-        $commandLoader = $container->get(CommandLoader::class);
+        $commandLoader = $container->get(PharCommandLoader::class);
 
         if (isset($commandLoader)) {
             foreach ($commandLoader->getCommands() as $command) {

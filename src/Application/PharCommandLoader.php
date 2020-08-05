@@ -8,7 +8,7 @@ namespace EFrane\PharTest\Application;
  * Class CommandLoader
  * @package EFrane\PharTest\Util
  */
-class CommandLoader
+class PharCommandLoader
 {
     /**
      * @var iterable
