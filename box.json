@@ -20,6 +20,7 @@
       "scoper.inc.php"
     ]
   }],
+  "git-tag": "git-tag",
   "compactors":[
     "KevinGH\\Box\\Compactor\\Php",
     "KevinGH\\Box\\Compactor\\PhpScoper"
