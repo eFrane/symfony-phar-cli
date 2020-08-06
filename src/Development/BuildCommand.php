@@ -35,8 +35,10 @@ class BuildCommand extends Command
         }
 
         try {
+            $output->writeln('Prebuilding Application Container');
             PharKernel::prebuildContainer('prod', false);
 
+            $output->writeln('Running vendor/bin/box compile');
             $buildProcess = new Process(['vendor/bin/box', 'compile']);
             $buildProcess->setTimeout(0);
             $buildProcess->setTty(true);
