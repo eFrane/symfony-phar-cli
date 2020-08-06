@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class HidePharCommandsFromDefaultConsolePass implements CompilerPassInterface
 {
-
     /**
      * Remove the console.command auto configuration tag from phar commands
      * to hide them from the default console (bin/console)

@@ -8,7 +8,13 @@ namespace EFrane\PharTest\Application;
 
 
 use Phar;
+use RuntimeException;
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Filesystem\Filesystem;
+use function is_dir;
+use function mkdir;
+use function sys_get_temp_dir;
 
 class PharKernel extends Kernel
 {
@@ -20,11 +26,7 @@ class PharKernel extends Kernel
     protected function initializeContainer()
     {
         if (Phar::running(false)) {
-            $container = $this->buildContainer();
-            $container->compile();
-
-            $this->container = $container;
-            $this->container->set('kernel', $this);
+            $this->loadPrebuiltContainer();
 
             return;
         }
@@ -34,9 +36,10 @@ class PharKernel extends Kernel
 
     private function prepareRuntimeDir(): string
     {
-        $runtimeDir = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test_phar_runtime';
-        if (!\is_dir($runtimeDir) && !mkdir($runtimeDir) && !is_dir($runtimeDir)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $runtimeDir));
+        $runtimeDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'test_phar_runtime';
+
+        if (!is_dir($runtimeDir) && !mkdir($runtimeDir) && !is_dir($runtimeDir)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $runtimeDir));
         }
 
         return $runtimeDir;
@@ -65,5 +68,59 @@ class PharKernel extends Kernel
         }
 
         return $projectDir;
+    }
+
+    /**
+     * @param bool $debug
+     * @return ConfigCache
+     */
+    public function getConfigCache(bool $debug): ConfigCache
+    {
+        $cache = new ConfigCache('build/phar_container/phar_container.php', $debug);
+
+        return $cache;
+    }
+
+    public static function prebuildContainer(string $environment, bool $debug): void
+    {
+        if (Phar::running(false)) {
+            throw new RuntimeException('Cannot prebuild container in running phar');
+        }
+
+        $kernel = new self($environment, $debug);
+        $kernel->boot();
+
+        $container = $kernel->buildContainer();
+        $container->compile();
+
+        $containerClass = $kernel->getContainerClass();
+        $baseClass = $kernel->getContainerBaseClass();
+
+        (new Filesystem())->mkdir('build/phar_container');
+
+        $cache = $kernel->getConfigCache($debug);
+
+        $kernel->dumpContainer($cache, $container, $containerClass, $baseClass);
+    }
+
+    protected function loadPrebuiltContainer(): void
+    {
+        $configCache = $this->getConfigCache($this->isDebug());
+        $cachePath = $configCache->getPath();
+
+        $errorLevel = error_reporting(E_ALL ^ E_WARNING);
+
+        try {
+            if (!is_file($cachePath) || !is_object($this->container = include $cachePath)) {
+                throw new RuntimeException('Failed to load container');
+            }
+
+            $this->container->set('kernel', $this);
+
+            error_reporting($errorLevel);
+
+            return;
+        } catch (\Throwable $e) {
+        }
     }
 }

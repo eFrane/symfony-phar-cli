@@ -2,26 +2,32 @@
   "main": "bin/test",
   "output": "build/test.phar",
   "compression": "GZ",
-  "finder": [{
-    "exclude": [
-      ".box",
-      ".github",
-      ".idea",
-      "vendor-bin",
-      "var"
-    ],
-    "ignoreDotFiles": false,
-    "in": ".",
-    "notName": [
-      "*.md",
-      ".gitignore",
-      "box.json",
-      "build.sh",
-      "scoper.inc.php"
-    ]
-  }],
+  "finder": [
+    {
+      "exclude": [
+        ".box",
+        ".github",
+        ".idea",
+        "build",
+        "vendor-bin",
+        "var"
+      ],
+      "ignoreDotFiles": false,
+      "in": ".",
+      "notName": [
+        "*.md",
+        ".gitignore",
+        "box.json",
+        "build.sh",
+        "scoper.inc.php"
+      ]
+    },
+    {
+      "in": "build/phar_container"
+    }
+  ],
   "git-tag": "git-tag",
-  "compactors":[
+  "compactors": [
     "KevinGH\\Box\\Compactor\\Php",
     "KevinGH\\Box\\Compactor\\PhpScoper"
   ]

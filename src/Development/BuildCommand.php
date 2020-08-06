@@ -7,6 +7,7 @@
 namespace EFrane\PharTest\Development;
 
 
+use EFrane\PharTest\Application\PharKernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,7 +25,7 @@ class BuildCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $errorReporting = error_reporting();
-        error_reporting(E_STRICT | E_WARNING);
+        error_reporting(E_ALL | E_STRICT);
 
         $retVal = Command::SUCCESS;
 
@@ -34,11 +35,15 @@ class BuildCommand extends Command
         }
 
         try {
+            PharKernel::prebuildContainer('prod', false);
+
             $buildProcess = new Process(['vendor/bin/box', 'compile']);
             $buildProcess->setTimeout(0);
             $buildProcess->setTty(true);
             $buildProcess->mustRun();
         } catch (\Exception $e) {
+            $output->writeln($e->getMessage());
+
             $retVal = Command::FAILURE;
         } finally {
             error_reporting($errorReporting);
