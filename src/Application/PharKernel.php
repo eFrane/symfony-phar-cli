@@ -76,6 +76,8 @@ class PharKernel extends Kernel
      */
     public function getConfigCache(bool $debug): ConfigCache
     {
+        (new Filesystem())->mkdir('build/phar_container');
+
         $cache = new ConfigCache('build/phar_container/phar_container.php', $debug);
 
         return $cache;
@@ -93,14 +95,12 @@ class PharKernel extends Kernel
         $container = $kernel->buildContainer();
         $container->compile();
 
-        $containerClass = $kernel->getContainerClass();
-        $baseClass = $kernel->getContainerBaseClass();
-
-        (new Filesystem())->mkdir('build/phar_container');
-
-        $cache = $kernel->getConfigCache($debug);
-
-        $kernel->dumpContainer($cache, $container, $containerClass, $baseClass);
+        $kernel->dumpContainer(
+            $kernel->getConfigCache($debug),
+            $container,
+            $kernel->getContainerClass(),
+            $kernel->getContainerBaseClass()
+        );
     }
 
     protected function loadPrebuiltContainer(): void
