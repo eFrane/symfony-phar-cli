@@ -26,7 +26,7 @@ services:
         tags: ['phar.command']
         lazy: true
 
-    EFrane\PharTest\Application\CommandLoader:
+    EFrane\PharTest\Application\PharCommandLoader:
         lazy: true
         public: true # must be public as it cannot be injected into PharApplication before kernel boot
         arguments:

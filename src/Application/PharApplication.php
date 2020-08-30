@@ -23,6 +23,7 @@ class PharApplication extends Application
         // change name and version from framework bundle settings
         $this->setName('test');
         $this->setVersion('@git-tag@');
+        $this->setDefaultCommand('list');
 
         // reset input definition to remove framework bundle extras
         $inputDefinition = $this->getDefaultInputDefinition();
@@ -31,7 +32,17 @@ class PharApplication extends Application
             new InputOption(
                 '--cwd',
                 '-C',
-                InputOption::VALUE_REQUIRED, 'Change the working directory'
+                InputOption::VALUE_REQUIRED,
+                'Change the working directory'
+            )
+        );
+
+        $inputDefinition->addOption(
+            new InputOption(
+                '--debug',
+                '',
+                InputOption::VALUE_NONE,
+                'Enable Symfony Debug mode'
             )
         );
 

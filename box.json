@@ -16,14 +16,12 @@
       "in": ".",
       "notName": [
         "*.md",
+        "*.phar",
         ".gitignore",
         "box.json",
         "build.sh",
         "scoper.inc.php"
       ]
-    },
-    {
-      "in": "build/phar_container"
     }
   ],
   "git-tag": "git-tag",
