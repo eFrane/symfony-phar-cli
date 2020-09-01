@@ -35,14 +35,8 @@ class BuildCommand extends Command
         }
 
         try {
-            $output->writeln('Prebuilding Application Container');
-            PharKernel::prebuildContainer('prod', false);
-
-            $output->writeln('Running vendor/bin/box compile');
-            $buildProcess = new Process(['vendor/bin/box', 'compile']);
-            $buildProcess->setTimeout(0);
-            $buildProcess->setTty(true);
-            $buildProcess->mustRun();
+            $this->buildContainer($output);
+            $this->buildPhar($output);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
 
@@ -52,5 +46,26 @@ class BuildCommand extends Command
         }
 
         return $retVal;
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    protected function buildPhar(OutputInterface $output): void
+    {
+        $output->writeln('Running vendor/bin/box compile');
+        $buildProcess = new Process(['vendor/bin/box', 'compile']);
+        $buildProcess->setTimeout(0);
+        $buildProcess->setTty(true);
+        $buildProcess->mustRun();
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    protected function buildContainer(OutputInterface $output): void
+    {
+        $output->writeln('Prebuilding Application Container');
+        PharKernel::prebuildContainer('prod', false);
     }
 }

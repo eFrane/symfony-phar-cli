@@ -7,20 +7,30 @@
 namespace EFrane\PharTest\Application;
 
 
-use EFrane\PharTest\CompilerPass\HideDefaultConsoleCommandsFromPharPass;
+use EFrane\PharTest\DependencyInjection\PharBuilder;
 use RuntimeException;
 use Symfony\Component\Config\ConfigCache;
-use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\Config\Loader\DelegatingLoader;
+use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Loader\ClosureLoader;
+use Symfony\Component\DependencyInjection\Loader\DirectoryLoader;
+use Symfony\Component\DependencyInjection\Loader\GlobFileLoader;
+use Symfony\Component\DependencyInjection\Loader\IniFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\Config\FileLocator;
 use function is_dir;
 use function mkdir;
 use function sys_get_temp_dir;
 
 class PharKernel extends Kernel
 {
-    const PHAR_CONTAINER_CACHE_DIR = 'build/phar_container';
+    const PHAR_CONTAINER_CACHE_DIR = 'phar_container/';
 
     /**
      * @var bool Is the Phar currently being built
@@ -34,15 +44,92 @@ class PharKernel extends Kernel
         }
 
         $kernel = new static($environment, $debug);
-        $kernel->boot();
         $kernel->setInBuild(true);
+        $kernel->boot();
 
-        $container = $kernel->buildContainer();
-        $container->compile(true);
+        PharBuilder::build($kernel, $debug);
+
+        // self::buildContainerWithSymfony($kernel, $debug);
+    }
+
+    /**
+     * Returns a loader for the container.
+     *
+     * @param ContainerInterface|ContainerBuilder $container
+     * @return DelegatingLoader The loader
+     */
+    public function getContainerLoader(ContainerInterface $container)
+    {
+        $locator = new FileLocator($this);
+        $resolver = new LoaderResolver([
+            new XmlFileLoader($container, $locator),
+            new YamlFileLoader($container, $locator),
+            new IniFileLoader($container, $locator),
+            new PhpFileLoader($container, $locator),
+            new GlobFileLoader($container, $locator),
+            new DirectoryLoader($container, $locator),
+            new ClosureLoader($container),
+        ]);
+
+        return new DelegatingLoader($resolver);
+    }
+
+    /**
+     * @param bool $debug
+     * @return ConfigCache
+     */
+    public function getConfigCache(bool $debug): ConfigCache
+    {
+        $path = self::PHAR_CONTAINER_CACHE_DIR;
+        if (!Util::inPhar()) {
+            $path = 'build/'.$path;
+        }
+
+        if ($this->isInBuild()) {
+            // reset pre-built container during build
+            $fs = new Filesystem();
+            if ($fs->exists($path)) {
+                $fs->remove(glob($path));
+            }
+
+            $fs->mkdir($path);
+        }
+
+        $cache = new ConfigCache($path, $debug);
+
+        return $cache;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInBuild(): bool
+    {
+        return $this->inBuild;
+    }
+
+    /**
+     * @param bool $inBuild
+     */
+    public function setInBuild(bool $inBuild): void
+    {
+        $this->inBuild = $inBuild;
+    }
+
+    /**
+     * @param PharKernel       $kernel
+     * @param bool             $debug
+     * @param ContainerBuilder $containerBuilder
+     */
+    protected static function buildContainerWithSymfony(
+        PharKernel $kernel,
+        bool $debug
+    ): void {
+        $containerBuilder = $kernel->buildContainer();
 
         $kernel->dumpContainer(
             $kernel->getConfigCache($debug),
-            $container,
+            $containerBuilder,
             $kernel->getContainerClass(),
             $kernel->getContainerBaseClass()
         );
@@ -61,30 +148,9 @@ class PharKernel extends Kernel
         }
     }
 
-    /**
-     * @param bool $debug
-     * @return ConfigCache
-     */
-    public function getConfigCache(bool $debug): ConfigCache
+    public function getKernelParameters(): array
     {
-        if ($this->isInBuild()) {
-            // reset pre-built container during build
-            $fs = new Filesystem();
-            if ($fs->exists(self::PHAR_CONTAINER_CACHE_DIR)) {
-                $fs->remove(glob(self::PHAR_CONTAINER_CACHE_DIR));
-            }
-
-            $fs->mkdir(self::PHAR_CONTAINER_CACHE_DIR);
-        }
-
-        $path = 'phar_container/phar_container.php';
-        if (!Util::inPhar()) {
-            $path = 'build/' . $path;
-        }
-
-        $cache = new ConfigCache($path, $debug);
-
-        return $cache;
+        return parent::getKernelParameters();
     }
 
     public function getCacheDir()
@@ -127,27 +193,6 @@ class PharKernel extends Kernel
         return $projectDir;
     }
 
-    /**
-     * @return bool
-     */
-    public function isInBuild(): bool
-    {
-        return $this->inBuild;
-    }
-
-    /**
-     * @param bool $inBuild
-     */
-    public function setInBuild(bool $inBuild): void
-    {
-        $this->inBuild = $inBuild;
-    }
-
-    protected function build(ContainerBuilder $containerBuilder)
-    {
-        $containerBuilder->addCompilerPass(new HideDefaultConsoleCommandsFromPharPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION);
-    }
-
     protected function initializeContainer()
     {
         if (Util::inPhar()) {
@@ -162,7 +207,7 @@ class PharKernel extends Kernel
     protected function loadPrebuiltContainer(): void
     {
         $configCache = $this->getConfigCache($this->isDebug());
-        $cachePath = $configCache->getPath();
+        $cachePath = $configCache->getPath().'container.php';
 
         $errorLevel = error_reporting(E_ALL ^ E_WARNING);
 

@@ -27,7 +27,6 @@ class BinProvider
         $input = new ArgvInput();
 
         $workingDirectory = (string)$input->getParameterOption(['--cwd', '-C'], getcwd(), true);
-        $debug = (bool)$input->getParameterOption(['--debug'], false, true);
 
         if (is_dir($workingDirectory)) {
             chdir($workingDirectory);
@@ -37,11 +36,10 @@ class BinProvider
         }
 
         putenv('APP_ENV=prod');
-        putenv('APP_DEBUG='.($debug) ? '1' : 0);
 
         (new Dotenv())->bootEnv(dirname(__DIR__, 2).'/.env');
 
-        $kernel = new PharKernel('prod', $debug);
+        $kernel = new PharKernel('prod', false);
         $application = new PharApplication($kernel);
 
         try {

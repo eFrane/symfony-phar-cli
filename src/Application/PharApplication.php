@@ -37,15 +37,6 @@ class PharApplication extends Application
             )
         );
 
-        $inputDefinition->addOption(
-            new InputOption(
-                '--debug',
-                '',
-                InputOption::VALUE_NONE,
-                'Enable Symfony Debug mode'
-            )
-        );
-
         $this->setDefinition($inputDefinition);
     }
 

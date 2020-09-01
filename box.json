@@ -8,7 +8,6 @@
         ".box",
         ".github",
         ".idea",
-        "build",
         "vendor-bin",
         "var"
       ],
