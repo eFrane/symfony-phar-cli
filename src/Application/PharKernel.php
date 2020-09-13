@@ -116,38 +116,6 @@ class PharKernel extends Kernel
         $this->inBuild = $inBuild;
     }
 
-    /**
-     * @param PharKernel       $kernel
-     * @param bool             $debug
-     * @param ContainerBuilder $containerBuilder
-     */
-    protected static function buildContainerWithSymfony(
-        PharKernel $kernel,
-        bool $debug
-    ): void {
-        $containerBuilder = $kernel->buildContainer();
-
-        $kernel->dumpContainer(
-            $kernel->getConfigCache($debug),
-            $containerBuilder,
-            $kernel->getContainerClass(),
-            $kernel->getContainerBaseClass()
-        );
-
-        $containerFinder = Finder::create()
-            ->in(self::PHAR_CONTAINER_CACHE_DIR)
-            ->name('*ProdContainer.php')
-            ->files();
-
-        foreach ($containerFinder as $fileInfo) {
-            $container = file_get_contents($fileInfo->getRealPath());
-
-            $container = str_replace('include_once \dirname(__DIR__, 3).', 'include_once \'../../\'.', $container);
-
-            file_put_contents($fileInfo->getRealPath(), $container);
-        }
-    }
-
     public function getKernelParameters(): array
     {
         return parent::getKernelParameters();
