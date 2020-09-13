@@ -10,6 +10,7 @@ namespace EFrane\PharTest\Development;
 use EFrane\PharTest\Application\PharKernel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
@@ -20,6 +21,13 @@ class BuildCommand extends Command
     public function configure(): void
     {
         $this->setDescription('Build the phar');
+
+        $this->addOption(
+            'only-container',
+            'C',
+            InputOption::VALUE_NONE,
+            'Only build the application container'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -36,7 +44,10 @@ class BuildCommand extends Command
 
         try {
             $this->buildContainer($output);
-            $this->buildPhar($output);
+
+            if (!$input->getOption('only-container')) {
+                $this->buildPhar($output);
+            }
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
 
