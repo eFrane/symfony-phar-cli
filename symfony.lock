@@ -2,11 +2,8 @@
     "bamarni/composer-bin-plugin": {
         "version": "1.4.1"
     },
-    "efrane/console-additions": {
-        "version": "v0.6.1"
-    },
     "php": {
-        "version": "7.3.19"
+        "version": "7.3"
     },
     "psr/cache": {
         "version": "1.0.1"
