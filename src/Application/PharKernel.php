@@ -180,6 +180,7 @@ class PharKernel extends Kernel
         $errorLevel = error_reporting(E_ALL ^ E_WARNING);
 
         try {
+            /** @noinspection PhpIncludeInspection */
             if (!is_file($cachePath) || !is_object($this->container = include $cachePath)) {
                 throw new RuntimeException("Failed to load container at {$cachePath}");
             }
