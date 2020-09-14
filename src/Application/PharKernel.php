@@ -22,7 +22,6 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Config\FileLocator;
 use function is_dir;
 use function mkdir;
@@ -80,9 +79,10 @@ class PharKernel extends Kernel
      */
     public function getConfigCache(bool $debug): ConfigCache
     {
-        $path = self::PHAR_CONTAINER_CACHE_DIR;
-        if (!Util::inPhar()) {
-            $path = 'build/'.$path;
+        $path = 'build'.DIRECTORY_SEPARATOR.self::PHAR_CONTAINER_CACHE_DIR;
+
+        if (Util::inPhar()) {
+            $path = Util::pharRoot().DIRECTORY_SEPARATOR.$path;
         }
 
         if ($this->isInBuild()) {
@@ -175,13 +175,13 @@ class PharKernel extends Kernel
     protected function loadPrebuiltContainer(): void
     {
         $configCache = $this->getConfigCache($this->isDebug());
-        $cachePath = $configCache->getPath().'container.php';
+        $cachePath = $configCache->getPath().'ProjectServiceContainer.php';
 
         $errorLevel = error_reporting(E_ALL ^ E_WARNING);
 
         try {
             if (!is_file($cachePath) || !is_object($this->container = include $cachePath)) {
-                throw new RuntimeException('Failed to load container');
+                throw new RuntimeException("Failed to load container at {$cachePath}");
             }
 
             $this->container->set('kernel', $this);
