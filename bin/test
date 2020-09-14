@@ -1,7 +1,11 @@
 <?php
 
 use EFrane\PharTest\Application\BinProvider;
+use EFrane\PharTest\Application\PharApplication;
+use EFrane\PharTest\Application\PharKernel;
 
 require Phar::running(true).'/vendor/autoload.php';
 
-return BinProvider::runPharBin();
+$bin = new BinProvider(PharKernel::class, PharApplication::class);
+
+return $bin();

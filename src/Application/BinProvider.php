@@ -12,12 +12,23 @@ use Symfony\Component\Dotenv\Dotenv;
 
 class BinProvider
 {
-    public static function runPharBin(): int
+    /**
+     * @var string
+     */
+    private $kernelClass; // = PharKernel::class;
+    /**
+     * @var string
+     */
+    private $applicationClass; // = PharApplication::class;
+
+    public function __construct(string $kernelClass, string $applicationClass)
     {
-        return (new self())();
+        $this->kernelClass = $kernelClass;
+        $this->applicationClass = $applicationClass;
     }
 
-    public function __invoke(): int {
+    public function __invoke(): int
+    {
         if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
             echo 'Warning: The console should be invoked via the CLI version of PHP, not the '.PHP_SAPI.' SAPI'.PHP_EOL;
         }
@@ -39,8 +50,8 @@ class BinProvider
 
         (new Dotenv())->bootEnv(dirname(__DIR__, 2).'/.env');
 
-        $kernel = new PharKernel('prod', false);
-        $application = new PharApplication($kernel);
+        $kernel = new $this->kernelClass('prod', false);
+        $application = new $this->applicationClass($kernel);
 
         try {
             return $application->run($input);
