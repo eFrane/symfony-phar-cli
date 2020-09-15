@@ -4,8 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d886f8cd7d3d75328e3b80781d86b34a",
+    "content-hash": "f956e3ffc10516f6d3d2e9c6533110ea",
     "packages": [
+        {
+            "name": "efrane/phar-builder-bundle",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "/Users/sgraupner/Development/Libs/PharBuilder",
+                "reference": "aebaff3ab00335e1e44f7abdd608e8ee52b7cd38"
+            },
+            "require": {
+                "php": ">=7.3",
+                "symfony/framework-bundle": "^5.1",
+                "symfony/http-kernel": "^5.1"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "\\EFrane\\PharBuilder\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "eFrane",
+                    "email": "efrane@meanderingsoul.com"
+                }
+            ],
+            "description": "Symfony Bundle to turn (CLI) Applications into PHARs",
+            "time": "2020-09-15T15:49:40+00:00"
+        },
         {
             "name": "psr/cache",
             "version": "1.0.1",
@@ -2130,7 +2161,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "efrane/phar-builder-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

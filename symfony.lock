@@ -2,6 +2,9 @@
     "bamarni/composer-bin-plugin": {
         "version": "1.4.1"
     },
+    "efrane/phar-builder-bundle": {
+        "version": "dev-master"
+    },
     "php": {
         "version": "7.3"
     },
