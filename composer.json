@@ -19,7 +19,7 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "/Users/sgraupner/Development/Libs/PharBuilder"
+            "url": "https://github.com/eFrane/phar-builder-bundle.git"
         }
     ],
     "require-dev": {
