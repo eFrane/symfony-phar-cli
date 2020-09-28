@@ -2,7 +2,7 @@
 
 namespace EFrane\PharTest\Application;
 
-use EFrane\PharTest\CompilerPass\HidePharCommandsFromDefaultConsolePass;
+use EFrane\PharBuilder\CompilerPass\HidePharCommandsFromDefaultConsolePass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -33,6 +33,8 @@ class Kernel extends BaseKernel
 
     protected function build(ContainerBuilder $containerBuilder)
     {
-        $containerBuilder->addCompilerPass(new HidePharCommandsFromDefaultConsolePass());
+        $containerBuilder->addCompilerPass(
+            new HidePharCommandsFromDefaultConsolePass()
+        );
     }
 }

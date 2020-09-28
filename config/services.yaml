@@ -26,12 +26,6 @@ services:
         tags: ['phar.command']
         lazy: true
 
-    EFrane\PharTest\Application\PharCommandLoader:
-        lazy: true
-        public: true # must be public as it cannot be injected into PharApplication before kernel boot
-        arguments:
-            - !tagged_iterator phar.command
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     Symfony\Component\DependencyInjection\ContainerInterface: ~

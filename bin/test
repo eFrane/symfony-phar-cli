@@ -2,6 +2,6 @@
 
 require Phar::running(true).'/vendor/autoload.php';
 
-$bin = new \EFrane\PharBuilder\Application\BinProvider(PharKernel::class, PharApplication::class);
+$bin = new \EFrane\PharBuilder\Application\BinProvider(\EFrane\PharTest\Application\PharKernel::class, \EFrane\PharTest\Application\PharApplication::class);
 
 return $bin();

@@ -1,0 +1,10 @@
+phar_builder:
+  phar_kernel: EFrane\PharTest\Application\PharKernel
+
+  build:
+    debug: true
+    #include_debug_commands: true
+    dump_container_debug_info: true
+    temp_path:            '%kernel.project_dir%/build'
+    output_path:          '%kernel.project_dir%'
+    output_filename:      'test.phar'

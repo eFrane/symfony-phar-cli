@@ -4,25 +4,26 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f956e3ffc10516f6d3d2e9c6533110ea",
+    "content-hash": "2c995af0ea73f0185e932ccd23a94551",
     "packages": [
         {
             "name": "efrane/phar-builder-bundle",
-            "version": "dev-master",
+            "version": "dev-bundlesetup",
             "source": {
                 "type": "git",
                 "url": "/Users/sgraupner/Development/Libs/PharBuilder",
-                "reference": "aebaff3ab00335e1e44f7abdd608e8ee52b7cd38"
+                "reference": "67518b51264b50bdae3153d09f11e251353a9b57"
             },
             "require": {
                 "php": ">=7.3",
+                "symfony/dotenv": "^5.1",
                 "symfony/framework-bundle": "^5.1",
                 "symfony/http-kernel": "^5.1"
             },
             "type": "symfony-bundle",
             "autoload": {
                 "psr-4": {
-                    "\\EFrane\\PharBuilder\\": "src/"
+                    "EFrane\\PharBuilder\\": "src/"
                 }
             },
             "license": [
@@ -30,12 +31,12 @@
             ],
             "authors": [
                 {
-                    "name": "eFrane",
+                    "name": "Stefan 'eFrane' Graupner",
                     "email": "efrane@meanderingsoul.com"
                 }
             ],
-            "description": "Symfony Bundle to turn (CLI) Applications into PHARs",
-            "time": "2020-09-15T15:49:40+00:00"
+            "description": "Symfony Bundle to turn (CLI) Applications into Phars",
+            "time": "2020-09-27T21:01:50+00:00"
         },
         {
             "name": "psr/cache",

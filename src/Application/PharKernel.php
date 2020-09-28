@@ -11,5 +11,4 @@ use EFrane\PharBuilder\Application\PharKernel as BasePharKernel;
 
 class PharKernel extends BasePharKernel
 {
-
 }
